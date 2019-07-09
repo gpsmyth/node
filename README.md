@@ -41,3 +41,10 @@ app.listen(port, () => {
 
 Message stating `server started at port 3000` should be observed  
 Navigate to http://localhost:3000
+
+### Sub-note with git
+Following commands used . 
+`git remote add origin git@github.com:gpsmyth/node.git` . 
+`git push -u origin master` . 
+
+This commit is performed at remote github side so a `git pull` will be performed locally.  
