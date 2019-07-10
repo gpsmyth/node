@@ -1,0 +1,7 @@
+package-lock.json
+
+# Distribution / packaging
+node_modules/
+
+# Environments
+views/
