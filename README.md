@@ -53,7 +53,7 @@ This commit is performed at remote github side so a `git pull` will be performed
 
 ## Source-code deploy on an node.js app on kubernetes using Docker
 
-### Sumary of second part  
+### Summary of second part  
 Took the code and built it into a docker image, pushed it to docker hub and referenced the image in a kubernetes deployment file and deployed behind a service using an interent ELB off AWS EKS
 
 ```
@@ -66,8 +66,21 @@ eksctl create cluster \
  --nodes-min 1 \
  --nodes-max 4 \
  --node-ami auto
+```  
+Pre-req for docker: note *gpsmyth* is docker login id   
+Build Docker image `docker image build -t <tag> .` e.g.  
+```
+docker image build -t gpsmyth/acg-web:0.3 .
+docker image ls
+docker image ls
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+gpsmyth/acg-web     0.3                 20b434121d56        36 hours ago        445MB
 
+docker push gpsmyth/acg-web:0.3
+```  
+`docker image inspect 20b434121d56` provides further detailed information
 
+```
 kubectl get nodes
 NAME                                                STATUS   ROLES    AGE   VERSION
 ip-192-168-34-52.ap-southeast-2.compute.internal    Ready    <none>   65s   v1.13.7-eks-c57ff8
