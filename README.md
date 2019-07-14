@@ -48,3 +48,62 @@ Following commands used .
 `git push -u origin master` . 
 
 This commit is performed at remote github side so a `git pull` will be performed locally.  
+
+### Progressing with pug
+
+## Source-code deploy on an node.js app on kubernetes using Docker
+
+### Sumary of second part  
+Took the code and built it into a docker image, pushed it to docker hub and referenced the image in a kubernetes deployment file and deployed behind a service using an interent ELB off AWS EKS
+
+```
+eksctl create cluster \
+ --name prod \
+ --version 1.13 \
+ --nodegroup-name standard-workers \
+ --node-type t3.medium \
+ --nodes 3 \
+ --nodes-min 1 \
+ --nodes-max 4 \
+ --node-ami auto
+
+
+kubectl get nodes
+NAME                                                STATUS   ROLES    AGE   VERSION
+ip-192-168-34-52.ap-southeast-2.compute.internal    Ready    <none>   65s   v1.13.7-eks-c57ff8
+ip-192-168-5-174.ap-southeast-2.compute.internal    Ready    <none>   68s   v1.13.7-eks-c57ff8
+ip-192-168-71-128.ap-southeast-2.compute.internal   Ready    <none>   68s   v1.13.7-eks-c57ff8
+
+kubectl apply -f ./web-deploy.yaml
+deployment.apps/simple-web created
+
+ kubectl get deployments
+NAME         READY   UP-TO-DATE   AVAILABLE   AGE
+simple-web   3/3     3            3           46s
+
+
+kubectl apply -f ./web-nodeport.yaml
+service/web-nodeport created
+
+kubectl get svc
+NAME           TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+kubernetes     ClusterIP   10.100.0.1       <none>        443/TCP          19m
+web-nodeport   NodePort    10.100.191.214   <none>        3000:31000/TCP   14s
+
+
+kubectl apply -f ./web-lb.yaml
+service/web-svc created
+
+kubectl get svc
+NAME           TYPE           CLUSTER-IP       EXTERNAL-IP                                                                    PORT(S)          AGE
+kubernetes     ClusterIP      10.100.0.1       <none>                                                                         443/TCP          21m
+web-nodeport   NodePort       10.100.191.214   <none>                                                                         3000:31000/TCP   2m46s
+web-svc        LoadBalancer   10.100.214.56    a5bd50d61a5d611e9965902ce50b022b-1004873066.ap-southeast-2.elb.amazonaws.com   80:31121/TCP     14s
+
+
+http://a5bd50d61a5d611e9965902ce50b022b-1004873066.ap-southeast-2.elb.amazonaws.com/ produced:
+```
+![](images/code_as_k8.png?raw=true)
+
+Finally:  
+`eksctl delete cluster --name prod`

@@ -1,0 +1,5 @@
+# Files to ignore - see https://docs.docker.com/engine/reference/builder/#dockerignore-file
+node_modules
+package-lock.json
+.tern-project
+.vscode
